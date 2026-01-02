@@ -18,9 +18,9 @@ Across these phases, the core message is that (1) modern cores can partially mas
 - Although Out-of-order execution can hide some miss latency, the performance degradation measured was still siginificant in both single-core and multi-core experiments . 
 - In multicore scaling, shared-cache pressure and bandwidth division make the victim’s per-core cache service effectively shrink with core count, motivating per-application QoS rather than one-size-fits-all sharing  
 - The QVC's filtering approach is simpler to prototype than a deep Ruby coherence-protocol integration, but it can incur simulation overhead and could break inherent optimization between the CPU and Ruby; despite that, the report shows a measured 28% gain for the protected server workload.
-- A more hardware-realistic path for the same idea is to implement protection as way-locking / range-register controlled behavior rather than a large dedicated structure. [file:8]
+- A more hardware-realistic path for the same idea is to implement protection as way-locking / range-register controlled behavior rather than a large dedicated structure.
 
-Investigate the report to understand the detail.
+Please investigate the report to understand the detail.
 ---
 
 ## 🔬 Project Phases
@@ -36,16 +36,17 @@ We implemented a **Software-Defined QoS Victim Filter Cache (QVC)**, or "Victim 
 
 #### Architecture: Software-Defined Filter
 Instead of complex hardware replacement policies, we let the software define what matters.
-1.  **Identify:** The application marks its "Hot Set" (e.g., the `dist` array and adjacency list backbone) using a custom instruction.
+1.  **Identify:** The application marks its "Hot Set" (e.g., the `dist` array and adjacency list headers) using a custom instruction.
 2.  **Filter:** The QVC intercepts memory requests.
     *   **Protected Range?** Service locally (1-cycle latency).
     *   **Unprotected?** Forward immediately to the standard cache hierarchy.
-3.  **Result:** Even when the L3 is thrashing, the QVC guarantees hits for the critical pointer chains.
+3.  **Result:** Even when the L3 is thrashing, the QVC guarantees hits for the critical data, recovering the performacne (IPC).
 
 #### Implementation Highlights
 *   **New SimObject:** `src/mem/VictimL1/` contains the C++ logic for the filter cache.
 *   **Byte-Granularity Validity:** Implemented bit-masks to handle sub-block fills from the Ruby memory system, preventing null-pointer faults.
-*   **Virtual-to-Physical Translation:** The pseudo-instruction (`qvcCtrl`) registers the protected ranges and includes a page-table walker to robustly register physical frames in fragmented memory.
+*   **Protected Data Registration:** The pseudo-instruction (`qvcCtrl`) registers the protected data ranges.
+*   **Virtual-to-Physical Translation:** The pseudo-instruction (`qvcCtrl`) includes a page-table walker to robustly register physical frames in fragmented memory.
 
 ---
 
@@ -53,7 +54,7 @@ Instead of complex hardware replacement policies, we let the software define wha
 
 ### Core Gem5 Modifications
 *   `src/mem/VictimL1/`: **[NEW]** The Victim Cache SimObject (C++ logic and Python parameters).
-*   `src/sim/pseudo_inst.cc`: **[MODIFIED]** Added `qvcCtrl` logic with page table translation.
+*   `src/sim/pseudo_inst.cc`: **[MODIFIED]** Added `qvcCtrl` logic with protected data registration and page table translation.
 *   `include/gem5/m5ops.h`: **[MODIFIED]** Added opcode definition (`0x58`) for the custom instruction.
 
 ### Configuration & Scripts
@@ -90,4 +91,4 @@ riscv64-unknown-elf-g++ -O3 -march=rv64gcv -static \
 ./build/RISCV/gem5.opt  $PATH_TO_CONFIG/Server_VictimL1_1C_config.py --mode=multicore-contention --cores=16
 ```
 
-Inspect the Python Configuration files to understand the command line options
+Please check out the Python Configuration files to understand the command line options
