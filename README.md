@@ -15,10 +15,9 @@ It is organized as:
 Across these phases, the core message is that (1) modern cores can partially mask latency, (2) shared-cache contention creates disproportionate slowdowns under workload mixing, and (3) a software-defined protection mechanism can claw back performance when critical pointer-chasing regions are kept close to the core. 
 
 ## Key findings
-- Although Out-of-order execution can hide some miss latency, the performance degradation measured was still siginificant in both single-core and multi-core experiments . 
+- Although Out-of-order execution can hide some miss latency, the performance degradations measured were still siginificant in both single-core and multi-core experiments. 
 - In multicore scaling, shared-cache pressure and bandwidth division make the victim’s per-core cache service effectively shrink with core count, motivating per-application QoS rather than one-size-fits-all sharing  
 - The QVC's filtering approach is simpler to prototype than a deep Ruby coherence-protocol integration, but it can incur simulation overhead and could break inherent optimization between the CPU and Ruby; despite that, the report shows a measured 28% gain for the protected server workload.
-- A more hardware-realistic path for the same idea is to implement protection as way-locking / range-register controlled behavior rather than a large dedicated structure.
 
 Please investigate the report to understand the detail.
 ---
@@ -28,7 +27,7 @@ Please investigate the report to understand the detail.
 ### Phase 1: The Vulnerability (Project A & B)
 We characterized a Dijkstra Single-Source Shortest Path (SSSP) kernel on a modeled RISC-V Out-of-Order (O3) CPU.
 *   **Finding:** Victim workloads (e.g. pointer-chasing programs) have high locality and their data will be evicted from the shared L2 or L3. L3 misses are the primary bottleneck.
-*   **The Aggressor:** We introduced a synthetic "Vector Aggressor" workload (SAXPY with RVV intrinsics). Note that in project A, the aggressor lies in the same program, modeling self-polluting programs.
+*   **The Aggressor:** We introduced a synthetic Vector Aggressor workload (SAXPY with RVV intrinsics). Note that in project A, the aggressor lies in the same program, modeling self-polluting programs.
 *   **Result:** When sharing an L3 cache, the Vector Aggressor creates bursty, high-bandwidth traffic that evicts the workload's hot working set, demonstrating siginificant performance degradation (e.g. 90% IPC drop)
 
 ### Phase 2: The Solution (Project C)
