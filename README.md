@@ -1,4 +1,4 @@
-# gem5-Cache-Thrashing-QVC-research
+# gem5-Cache-Thrashing-Mitigation-and-Software-Defined-QoS-Victim-Filter-Cache-research
 
 **Author:** Fredrick Chiu  
 **Affiliation:** Rice University ECE  
