@@ -62,7 +62,7 @@ Instead of complex hardware replacement policies, we let the software define wha
 ### Workloads
 *   `workloads/workload_magic_wand_1A.cpp`: Project A's self-polluted victim workload. It models a common image editor scenario.
 *   `workloads/barnes_hut_1A.cpp`: Project A's self-polluted victim workload. It runs a Barnes-Hut N-body simulation for interparticle or interstellar interactions. 
-*   `workloads/Dijkstra_BFS_Server_1B.cpp`: Project B's victim workload. The BFS Point-of-Interest Server Victim workload. It runs an dijkstra's algorithm first to find the path and use BFS to server user queries.
+*   `workloads/Dijkstra_BFS_Server_1B.cpp`: Project B's victim workload. The BFS Point-of-Interest Server Victim workload. It first runs an dijkstra's algorithm to find the path and then uses BFS to serve user queries.
 *   `workloads/Server_VictimL1.cpp`: Same as project B but now with protected data. Instrumented with `m5_qvc_ctrl` to register the adjacency list headers.
 *   `workloads/saxpy_vector_aggressor.cpp`: The Aggressor workload using RISC-V Vector intrinsics.
 ---
