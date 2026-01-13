@@ -20,6 +20,7 @@ Across these phases, the core message is that (1) modern cores can partially mas
 - The QVC's filtering approach is simpler to prototype than a deep Ruby coherence-protocol integration, but it can incur simulation overhead and could break inherent optimization between the CPU and Ruby; despite that, the report shows a measured 28% gain for the protected server workload.
 
 Please investigate the report to understand the detail.
+
 ---
 
 ## 🔬 Project Phases
